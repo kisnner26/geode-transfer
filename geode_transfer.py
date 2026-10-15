@@ -660,8 +660,14 @@ def add_selection(p: argparse.ArgumentParser) -> None:
 def cmd_devices(args) -> int:
     devices = list_devices()
     if not devices:
+        if args.json:
+            say("[]")
+            return 1
         say("no iPhone or iPad found. Connect one with a cable, unlock it and tap Trust")
         return 1
+    if args.json:
+        say(json.dumps([dataclasses.asdict(device) for device in devices]))
+        return 0
     rows = [(d.name, d.model, f"iOS {d.os}", d.transport) + ((d.udid,) if args.udid else ()) for d in devices]
     widths = [max(len(v) for v in column) for column in zip(*rows)]
     for row in rows:
@@ -743,6 +749,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("devices", help="list connected iPhones and iPads")
     p.add_argument("--udid", action="store_true", help="also show each device's UDID")
+    p.add_argument("--json", action="store_true", help="print devices as JSON for integrations")
     p.set_defaults(func=cmd_devices)
 
     p = sub.add_parser("apps", help="show the Geode apps on a device and whether their data is readable")
