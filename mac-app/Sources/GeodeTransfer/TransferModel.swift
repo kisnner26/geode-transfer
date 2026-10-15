@@ -79,7 +79,7 @@ enum CommandRunner {
             let script = try scriptURL()
             let process = Process()
             process.executableURL = URL(filePath: "/usr/bin/env")
-            process.arguments = ["python3", script.path()] + arguments
+            process.arguments = ["python3", script.path(percentEncoded: false)] + arguments
 
             let stdout = Pipe()
             let stderr = Pipe()
@@ -104,6 +104,9 @@ enum CommandRunner {
     private static func scriptURL() throws -> URL {
         if let configured = ProcessInfo.processInfo.environment["GEODE_TRANSFER_CLI"] {
             return URL(filePath: configured)
+        }
+        if let bundled = Bundle.main.url(forResource: "geode_transfer", withExtension: "py") {
+            return bundled
         }
         let current = URL.currentDirectory()
         let localScript = current.appending(path: "../geode_transfer.py").standardized
