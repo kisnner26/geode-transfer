@@ -6,6 +6,8 @@
     <string>Geode Transfer</string>
     <key>CFBundleExecutable</key>
     <string>GeodeTransfer</string>
+    <key>CFBundleIconFile</key>
+    <string>GeodeTransfer</string>
     <key>CFBundleIdentifier</key>
     <string>org.geode-sdk.transfer</string>
     <key>CFBundleInfoDictionaryVersion</key>

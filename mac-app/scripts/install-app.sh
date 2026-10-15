@@ -14,6 +14,7 @@ rm -rf "$destination"
 mkdir -p "$destination/Contents/MacOS" "$destination/Contents/Resources"
 cp "$build_root/GeodeTransfer" "$destination/Contents/MacOS/GeodeTransfer"
 cp "$repo_root/geode_transfer.py" "$destination/Contents/Resources/geode_transfer.py"
+cp "$app_root/App/GeodeTransfer.icns" "$destination/Contents/Resources/GeodeTransfer.icns"
 cp "$app_root/App/Info.plist" "$destination/Contents/Info.plist"
 
 codesign --force --sign - "$destination"

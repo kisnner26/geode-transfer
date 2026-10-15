@@ -1,0 +1,23 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="surface" x1="136" y1="96" x2="888" y2="928" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#35303E"/>
+      <stop offset="0.5" stop-color="#19171E"/>
+      <stop offset="1" stop-color="#0A0A0D"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="372" y1="326" x2="694" y2="704" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C9FFF0"/>
+      <stop offset="0.42" stop-color="#78E5C0"/>
+      <stop offset="1" stop-color="#35A98B"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="25" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect x="42" y="42" width="940" height="940" rx="218" fill="url(#surface)"/>
+  <rect x="43" y="43" width="938" height="938" rx="217" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="2"/>
+  <path d="M250 393C278 300 366 236 470 236H655L589 170L638 121L790 273L638 425L589 376L655 310H470C397 310 337 359 317 426L250 393Z" fill="url(#mark)" filter="url(#shadow)"/>
+  <path d="M774 631C746 724 658 788 554 788H369L435 854L386 903L234 751L386 599L435 648L369 714H554C627 714 687 665 707 598L774 631Z" fill="url(#mark)" filter="url(#shadow)"/>
+  <circle cx="512" cy="512" r="77" fill="#111217" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="4"/>
+  <path d="M512 455L561 483V540L512 569L463 540V483L512 455Z" fill="none" stroke="#E4FFF6" stroke-width="12" stroke-linejoin="round"/>
+</svg>
