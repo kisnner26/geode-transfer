@@ -188,6 +188,10 @@ def devicectl(args: list[str], *, json_output: bool = False, attempts: int = 1, 
 
 # -------------------------------------------------------------------- devices
 
+# devicectl reports a cable as "wired" and the local network as "localNetwork"
+CONNECTIONS = {"wired": "usb", "localNetwork": "wifi"}
+
+
 @dataclasses.dataclass
 class Device:
     id: str
@@ -202,6 +206,11 @@ class Device:
     @property
     def label(self) -> str:
         return f"{self.name} ({self.model}, iOS {self.os})"
+
+    @property
+    def connection(self) -> str:
+        """How the device is reached: "usb" (cable), "wifi" or "unknown"."""
+        return CONNECTIONS.get(self.transport, "unknown")
 
 
 def normalize(text: str) -> str:

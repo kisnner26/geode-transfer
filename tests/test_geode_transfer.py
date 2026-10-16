@@ -159,6 +159,12 @@ class Devices(unittest.TestCase):
         self.assertEqual([d.kind for d in devices], ["iPad", "iPhone"])
         self.assertEqual(devices[1].udid, "UDID-PHONE")
 
+    def test_connection_tells_a_cable_from_wifi(self):
+        devices = gt.parse_devices(DEVICES)
+        self.assertEqual([d.connection for d in devices], ["usb", "wifi"])
+        devices[0].transport = "?"
+        self.assertEqual(devices[0].connection, "unknown")
+
     def test_pick_by_name_ignores_curly_quotes_and_nbsp(self):
         devices = gt.parse_devices(DEVICES)
         self.assertEqual(gt.pick_device(devices, "my ipad").id, "AAAA-1")
