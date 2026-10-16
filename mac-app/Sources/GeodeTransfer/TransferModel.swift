@@ -3,6 +3,7 @@ import Observation
 
 @MainActor @Observable
 final class TransferModel {
+    let isDemo: Bool
     var devices: [Device] = []
     var sourceID: Device.ID?
     var targetID: Device.ID?
@@ -12,6 +13,23 @@ final class TransferModel {
     var phase: TransferPhase = .loading
     var output = "Looking for connected devices..."
 
+    init(
+        isDemo: Bool = CommandLine.arguments.contains("--demo")
+            || ProcessInfo.processInfo.environment["GEODE_TRANSFER_DEMO"] == "1"
+    ) {
+        self.isDemo = isDemo
+        if isDemo {
+            devices = [
+                Device(id: "demo-ipad", udid: "DEMO-IPAD", name: "iPad Pro", model: "iPad Pro 13-inch", os: "iPadOS 27.2", kind: "iPad", transport: "wired", pairing: "paired"),
+                Device(id: "demo-iphone", udid: "DEMO-IPHONE", name: "iPhone 15 Pro", model: "iPhone 15 Pro", os: "iOS 27.2", kind: "iPhone", transport: "wifi", pairing: "paired")
+            ]
+            sourceID = devices[0].id
+            targetID = devices[1].id
+            phase = .ready
+            output = "Preview data only. No devices will be changed."
+        }
+    }
+
     var source: Device? { devices.first { $0.id == sourceID } }
     var target: Device? { devices.first { $0.id == targetID } }
     var isRunning: Bool { phase == .loading || phase == .running }
@@ -20,6 +38,7 @@ final class TransferModel {
     }
 
     func refreshDevices() async {
+        guard !isDemo else { return }
         phase = .loading
         output = "Looking for connected devices..."
         do {
@@ -45,6 +64,11 @@ final class TransferModel {
 
     func transfer() async {
         guard let source, let target else { return }
+        if isDemo {
+            phase = .completed
+            output = "Preview complete. No devices were changed."
+            return
+        }
         phase = .running
         output = "Preparing transfer from \(source.name) to \(target.name)..."
         var arguments = [

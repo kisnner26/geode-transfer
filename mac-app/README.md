@@ -20,3 +20,7 @@ The app locates `../geode_transfer.py` during development. For another location,
 This builds a release app at `~/Applications/Geode Transfer.app`, bundles the Python engine and opens it.
 
 The app requires macOS 26, Xcode 27 and the same connected, unlocked development-signed devices required by the CLI.
+
+## preview for documentation
+
+Run `swift run GeodeTransfer --demo` to open the native interface with clearly marked sample devices. It never invokes the transfer engine or changes a device.

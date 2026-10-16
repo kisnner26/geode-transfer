@@ -42,6 +42,11 @@ struct ContentView: View {
                     .foregroundStyle(GeodeTheme.mint)
                 Text("Saves, mods and settings — verified after every transfer.")
                     .foregroundStyle(.secondary)
+                if model.isDemo {
+                    Label("preview data · no devices will change", systemImage: "eye")
+                        .font(.callout)
+                        .foregroundStyle(GeodeTheme.gold)
+                }
             }
             Spacer()
             Button("Refresh devices", systemImage: "arrow.clockwise") {
