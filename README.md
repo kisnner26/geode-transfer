@@ -16,6 +16,8 @@ cd geode-transfer
 python3 geode_transfer.py devices
 python3 geode_transfer.py transfer --from "iPad" --to "iPhone" --dry-run   # see the plan
 python3 geode_transfer.py transfer --from "iPad" --to "iPhone"
+# require USB for both ends instead of using Wi-Fi
+python3 geode_transfer.py transfer --from "iPad" --to "iPhone" --via-cable
 ```
 
 or install it: `pip install .` gives you the `geode-transfer` command.
@@ -25,6 +27,7 @@ or install it: `pip install .` gives you the `geode-transfer` command.
 ## mac app
 
 the native mac app uses the same transfer engine with a visual route picker, category controls and an explicit confirmation before anything is written.
+choose **usb cable** in the route control to hide Wi-Fi devices and require both ends to stay connected and unlocked by cable.
 
 ![geode transfer mac app route and transfer options](assets/mac-app-overview.png)
 
@@ -41,6 +44,7 @@ swift run GeodeTransfer
 
 - a mac with xcode 15 or newer (it uses `xcrun devicectl`) and python 3.9 or newer, no other dependencies
 - both devices paired with the mac, unlocked, with developer mode on
+- for a cable-only transfer, connect both devices with USB and use `--via-cable` (or `--cable`); the command refuses to fall back to Wi-Fi
 - geode installed on both with a **development profile** (xcode, altstore, sidestore). apps from the app store or trollstore can't be read by `devicectl`, and `geode-transfer apps` tells you if yours can
 - geode **closed** on both devices, and geometry dash installed on the target (geode patches it from there)
 
@@ -77,7 +81,7 @@ not copied on purpose: the patched copy of geometry dash, the folders geode rege
 | `apps --device X` | show geode on a device and whether its data is readable |
 | `backup --device X --out DIR` | save the data to a folder on your mac |
 | `restore DIR --device Y` | write a backup into a device |
-| `transfer --from X --to Y` | backup and restore in one step |
+| `transfer --from X --to Y` | backup and restore in one step (`--via-cable` requires USB for both devices) |
 
 devices are matched by name, so `--device iPad` is enough. common options: `--only`, `--skip`, `--dry-run`, `--yes`, `--jobs N`, `--include-certificate`. run any command with `--help`.
 
