@@ -22,6 +22,21 @@ or install it: `pip install .` gives you the `geode-transfer` command.
 
 ![listing the connected devices](assets/devices.png)
 
+## mac app
+
+the native mac app uses the same transfer engine with a visual route picker, category controls and an explicit confirmation before anything is written.
+
+![geode transfer mac app route and transfer options](assets/mac-app-overview.png)
+
+![geode transfer mac app overwrite confirmation](assets/mac-app-confirmation.png)
+
+build and open it locally:
+
+```sh
+cd mac-app
+swift run GeodeTransfer
+```
+
 ## what you need
 
 - a mac with xcode 15 or newer (it uses `xcrun devicectl`) and python 3.9 or newer, no other dependencies
