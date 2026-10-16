@@ -7,6 +7,9 @@ final class TransferModel {
     var devices: [Device] = []
     var sourceID: Device.ID?
     var targetID: Device.ID?
+    var connection: TransferConnection = .automatic {
+        didSet { reconcileRouteSelection() }
+    }
     var selectedCategories = Set(TransferCategory.allCases)
     var includeCertificate = false
     var keepBackup = false
@@ -32,9 +35,15 @@ final class TransferModel {
 
     var source: Device? { devices.first { $0.id == sourceID } }
     var target: Device? { devices.first { $0.id == targetID } }
+    var routeDevices: [Device] {
+        connection == .cable ? devices.filter { $0.transport == "wired" } : devices
+    }
+    var needsCable: Bool { connection == .cable }
     var isRunning: Bool { phase == .loading || phase == .running }
     var canTransfer: Bool {
-        source != nil && target != nil && sourceID != targetID && !selectedCategories.isEmpty && !isRunning
+        guard let source, let target else { return false }
+        return routeDevices.contains(source) && routeDevices.contains(target)
+            && sourceID != targetID && !selectedCategories.isEmpty && !isRunning
     }
 
     func refreshDevices() async {
@@ -44,10 +53,12 @@ final class TransferModel {
         do {
             let result = try await CommandRunner.run(arguments: ["devices", "--json"])
             devices = try JSONDecoder().decode([Device].self, from: Data(result.stdout.utf8))
-            sourceID = devices.contains { $0.id == sourceID } ? sourceID : devices.first?.id
-            targetID = devices.first { $0.id != sourceID }?.id
+            reconcileRouteSelection()
             phase = .ready
-            output = devices.isEmpty ? "No compatible iPhone or iPad found." : "\(devices.count) device\(devices.count == 1 ? "" : "s") ready."
+            let available = routeDevices.count
+            output = available == 0
+                ? (needsCable ? "No USB devices found. Connect and unlock both devices." : "No compatible iPhone or iPad found.")
+                : "\(available) \(needsCable ? "USB " : "")device\(available == 1 ? "" : "s") ready."
         } catch {
             phase = .failed(error.localizedDescription)
             output = error.localizedDescription
@@ -79,6 +90,7 @@ final class TransferModel {
         ]
         if includeCertificate { arguments.append("--include-certificate") }
         if keepBackup { arguments.append("--keep") }
+        if needsCable { arguments.append("--via-cable") }
 
         do {
             let result = try await CommandRunner.run(arguments: arguments) { [weak self] line in
@@ -90,6 +102,14 @@ final class TransferModel {
             phase = .failed(error.localizedDescription)
             output = error.localizedDescription
         }
+    }
+
+    private func reconcileRouteSelection() {
+        let available = routeDevices
+        sourceID = available.contains { $0.id == sourceID } ? sourceID : available.first?.id
+        targetID = available.contains { $0.id == targetID && $0.id != sourceID }
+            ? targetID
+            : available.first { $0.id != sourceID }?.id
     }
 }
 

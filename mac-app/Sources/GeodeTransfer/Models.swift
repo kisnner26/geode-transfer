@@ -15,6 +15,20 @@ struct Device: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+enum TransferConnection: String, CaseIterable, Identifiable {
+    case automatic
+    case cable
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .automatic: "automatic"
+        case .cable: "usb cable"
+        }
+    }
+}
+
 enum TransferCategory: String, CaseIterable, Identifiable {
     case saves
     case mods

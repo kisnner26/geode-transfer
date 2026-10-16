@@ -65,15 +65,27 @@ struct ContentView: View {
                 Label("transfer route", systemImage: "arrow.left.arrow.right")
                     .font(.headline)
                     .foregroundStyle(GeodeTheme.gold)
+                Picker("connection", selection: $model.connection) {
+                    ForEach(TransferConnection.allCases) { connection in
+                        Text(connection.title).tag(connection)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel("transfer connection")
+                .accessibilityHint("USB cable only requires both devices to be connected and unlocked with a cable")
                 HStack(spacing: 14) {
-                    DevicePicker(title: "from", selection: $model.sourceID, devices: model.devices, excludedID: model.targetID)
+                    DevicePicker(title: "from", selection: $model.sourceID, devices: model.routeDevices, excludedID: model.targetID)
                     Image(systemName: "arrow.right")
                         .font(.title2.bold())
                         .foregroundStyle(GeodeTheme.mint)
                         .accessibilityHidden(true)
-                    DevicePicker(title: "to", selection: $model.targetID, devices: model.devices, excludedID: model.sourceID)
+                    DevicePicker(title: "to", selection: $model.targetID, devices: model.routeDevices, excludedID: model.sourceID)
                 }
-                if model.devices.isEmpty, model.phase != .loading {
+                if model.needsCable, model.routeDevices.count < 2 {
+                    Label("Connect and unlock both devices with USB to continue.", systemImage: "cable.connector")
+                        .font(.callout)
+                        .foregroundStyle(GeodeTheme.gold)
+                } else if model.devices.isEmpty, model.phase != .loading {
                     ContentUnavailableView("No devices found", systemImage: "iphone.slash", description: Text("Connect and unlock both devices, then choose Refresh devices."))
                 }
             }
