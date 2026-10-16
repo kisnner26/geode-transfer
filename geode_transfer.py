@@ -266,6 +266,16 @@ def pick_device(devices: list[Device], query: str | None) -> Device:
     raise TransferError(f"'{query}' matches {len(matches)} devices, be more specific: " + ", ".join(d.name for d in matches))
 
 
+def require_cable(*devices: Device) -> None:
+    """Refuse a cable transfer unless every endpoint is on USB."""
+    wireless = [device.name for device in devices if device.transport != "wired"]
+    if wireless:
+        names = ", ".join(wireless)
+        raise TransferError(
+            f"cable transfer needs every device connected by USB. Connect and unlock: {names}"
+        )
+
+
 # ------------------------------------------------------------------------ apps
 
 @dataclasses.dataclass
@@ -723,6 +733,8 @@ def cmd_transfer(args) -> int:
     dst = pick_device(devices, args.target)
     if src.id == dst.id:
         raise TransferError("the source and the target are the same device")
+    if args.via_cable:
+        require_cable(src, dst)
     src_app = find_app(src, args.bundle_id)
     dst_app = find_app(dst, args.target_bundle_id or args.bundle_id)
     say(f"{src.label}  ->  {dst.label}")
@@ -791,6 +803,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--yes", action="store_true", help="do not ask for confirmation")
     p.add_argument("--force", action="store_true", help="continue even if Geode seems to be open")
     p.add_argument("--no-safety-backup", action="store_true", help="skip the automatic backup of the target's current saves")
+    p.add_argument("--via-cable", "--cable", dest="via_cable", action="store_true",
+                   help="require both devices to be connected by USB")
     add_selection(p)
     p.set_defaults(func=cmd_transfer)
     return parser

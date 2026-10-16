@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import sys
 import tempfile
@@ -191,6 +192,25 @@ class Devices(unittest.TestCase):
         with self.assertRaises(gt.TransferError) as ctx:
             gt.pick_device(devices, "iphone")
         self.assertIn("be more specific", str(ctx.exception))
+
+    def test_cable_transfer_accepts_two_wired_devices(self):
+        devices = gt.parse_devices(DEVICES)
+        second = dataclasses.replace(devices[1], transport="wired")
+        gt.require_cable(devices[0], second)
+
+    def test_cable_transfer_rejects_wifi_device(self):
+        devices = gt.parse_devices(DEVICES)
+        with self.assertRaises(gt.TransferError) as ctx:
+            gt.require_cable(*devices)
+        self.assertIn("USB", str(ctx.exception))
+        self.assertIn("Alex’s iPhone (2)", str(ctx.exception))
+
+    def test_transfer_parser_accepts_cable_aliases(self):
+        parser = gt.build_parser()
+        via_cable = parser.parse_args(["transfer", "--from", "source", "--to", "target", "--via-cable"])
+        alias = parser.parse_args(["transfer", "--from", "source", "--to", "target", "--cable"])
+        self.assertTrue(via_cable.via_cable)
+        self.assertTrue(alias.via_cable)
 
 
 class Apps(unittest.TestCase):
